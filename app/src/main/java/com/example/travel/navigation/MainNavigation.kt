@@ -17,7 +17,7 @@ fun MainNavigation() {
     NavHost(
         navController = navController,
         startDestination = if(user == null){
-                                "login"
+                                "home"
                             } else {
                                 "home"
                             }

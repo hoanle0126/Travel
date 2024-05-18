@@ -13,10 +13,10 @@ class ProvinceViewModel:ViewModel() {
     var provinceResult:ProvinceResult by mutableStateOf(ProvinceResult())
 
     init {
-        getProvince()
+        getResult()
     }
 
-    private fun getProvince(){
+    private fun getResult(){
         viewModelScope.launch {
             provinceResult = ProvinceApi.retrofitService.getProvince()
         }
