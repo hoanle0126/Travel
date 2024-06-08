@@ -65,6 +65,8 @@ import com.example.travel.ui.layout.DefaultLayout
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun InfoPlaceScreen(navController: NavController) {
@@ -87,6 +89,8 @@ fun InfoPlaceScreen(navController: NavController) {
     val nearby: NearbyObject = viewModel(factory = factory2)
     val nearbyres: NearbyRestaurantObject = viewModel(factory = factory3)
     val reviews: ReviewsObject = viewModel(factory = factory4)
+    val database: FirebaseDatabase = FirebaseDatabase.getInstance("https://travel-f4cbd-default-rtdb.asia-southeast1.firebasedatabase.app")
+    val databaseReference: DatabaseReference = database.reference.child("Places")
 
     DefaultLayout(
         navController = navController,
@@ -247,14 +251,6 @@ fun InfoPlaceScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.outline
                     )
                 }
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        imageVector = Icons.Rounded.KeyboardArrowRight,
-                        contentDescription = "",
-                        modifier = Modifier.size(32.dp),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
             }
         }
 //
@@ -278,7 +274,20 @@ fun InfoPlaceScreen(navController: NavController) {
                 Row(
                     modifier = Modifier
                         .height(80.dp)
-                        .clickable { navController.navigate("details/${nearby.business_id}/${nearby.latitude.toString()}/${nearby.longitude.toString()}") },
+                        .clickable {
+                            navController.navigate("details/${nearby.business_id}/${nearby.latitude.toString()}/${nearby.longitude.toString()}")
+                            val placeUpdates = mapOf(
+                                "business_id" to nearby.business_id,
+                                "name" to nearby.name,
+                                "rating" to nearby.rating,
+                                "type" to nearby.types.firstOrNull().orEmpty(),
+                                "city" to nearby.city,
+                                "photo" to nearby.photos.firstOrNull()?.src.orEmpty(),
+                                "ltn" to nearby.latitude.toString(),
+                                "lng" to nearby.longitude.toString()
+                            )
+                            databaseReference.child(nearby.business_id).setValue(placeUpdates)
+                                   },
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     nearby.photos?.take(1)?.forEach { photo ->
@@ -350,7 +359,20 @@ fun InfoPlaceScreen(navController: NavController) {
                     Row(
                         modifier = Modifier
                             .height(80.dp)
-                            .clickable { navController.navigate("details/${nearbyres.business_id}/${nearbyres.latitude.toString()}/${nearbyres.longitude.toString()}") },
+                            .clickable {
+                                navController.navigate("details/${nearbyres.business_id}/${nearbyres.latitude.toString()}/${nearbyres.longitude.toString()}")
+                                val placeUpdates = mapOf(
+                                    "business_id" to nearbyres.business_id,
+                                    "name" to nearbyres.name,
+                                    "rating" to nearbyres.rating,
+                                    "type" to nearbyres.types.firstOrNull().orEmpty(),
+                                    "city" to nearbyres.city,
+                                    "photo" to nearbyres.photos.firstOrNull()?.src.orEmpty(),
+                                    "ltn" to nearbyres.latitude.toString(),
+                                    "lng" to nearbyres.longitude.toString()
+                                )
+                                databaseReference.child(nearbyres.business_id).setValue(placeUpdates)
+                                       },
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         nearbyres.photos?.take(1)?.forEach { photo ->
@@ -400,26 +422,6 @@ fun InfoPlaceScreen(navController: NavController) {
                 }
             }
         }
-//
-//        Liên hệ trực tiếp
-        details.detailsResult?.data?.forEach { details ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-            ) {
-                Text(
-                    text = "Liên hệ trực tiếp",
-                    style = MaterialTheme.typography.labelLarge
-                )
-                Text(
-                    text = "Link liên hệ",
-                    style = MaterialTheme.typography.labelLarge,
-                    textDecoration = TextDecoration.Underline
-                )
-            }
-        }
-//
 //        Đánh giá
         Tabs(details = details, reviews = reviews)
 //
@@ -506,34 +508,34 @@ fun Tabs(details: DetailsObject?, reviews: ReviewsObject?) {
             }
 //
 //            Tab row 2
-            Column(
-                modifier = Modifier
-                    .clickable { tabSelected = 1 }
-                    .height(36.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier
-                        .weight(1f),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "H&Đ",
-                        style = if (tabSelected == 1) MaterialTheme.typography.titleSmall
-                        else MaterialTheme.typography.bodySmall
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(3.dp)
-                        .background(
-                            if (tabSelected == 1) MaterialTheme.colorScheme.onSurface
-                            else Color.Transparent
-                        )
-                )
-            }
+//            Column(
+//                modifier = Modifier
+//                    .clickable { tabSelected = 1 }
+//                    .height(36.dp),
+//                verticalArrangement = Arrangement.SpaceBetween,
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .weight(1f),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Text(
+//                        text = "H&Đ",
+//                        style = if (tabSelected == 1) MaterialTheme.typography.titleSmall
+//                        else MaterialTheme.typography.bodySmall
+//                    )
+//                }
+//                Box(
+//                    modifier = Modifier
+//                        .width(40.dp)
+//                        .height(3.dp)
+//                        .background(
+//                            if (tabSelected == 1) MaterialTheme.colorScheme.onSurface
+//                            else Color.Transparent
+//                        )
+//                )
+//            }
 //
         }
 //

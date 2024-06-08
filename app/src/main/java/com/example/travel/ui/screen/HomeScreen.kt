@@ -23,6 +23,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,17 +42,45 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.travel.R
+import com.example.travel.data.model.Firebase.Place
 import com.example.travel.data.model.PlacesList.Photo
 import com.example.travel.data.`object`.DetailsObject
 import com.example.travel.data.`object`.PlaceObject
 import com.example.travel.data.`object`.RestaurantObject
 import com.example.travel.ui.component.RatingCustom
 import com.example.travel.ui.layout.DefaultLayout
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val places: PlaceObject = viewModel()
     val restaurants: RestaurantObject = viewModel()
+    val database: FirebaseDatabase = FirebaseDatabase.getInstance("https://travel-f4cbd-default-rtdb.asia-southeast1.firebasedatabase.app")
+    val databaseReference: DatabaseReference = database.reference.child("Places")
+    val recentPlaces = remember { mutableStateOf<List<Place>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        databaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val placesList = mutableListOf<Place>()
+                for (placeSnapshot in snapshot.children) {
+                    val place = placeSnapshot.getValue(Place::class.java)
+                    if (place != null) {
+                        placesList.add(place)
+                    }
+                }
+                recentPlaces.value = placesList
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle database error
+            }
+        })
+    }
 
     DefaultLayout(
         navController = navController,
@@ -190,7 +221,7 @@ fun HomeScreen(navController: NavController) {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                repeat(12) {
+                recentPlaces.value.take(12).forEach { place ->
                     Column(
                         modifier = Modifier
                             .width(180.dp),
@@ -198,6 +229,7 @@ fun HomeScreen(navController: NavController) {
                     ) {
                         AsyncImage(
                             modifier = Modifier
+                                .clickable { navController.navigate("details/${place.business_id.toString()}/${place.ltn.toString()}/${place.lng.toString()}") }
                                 .fillMaxWidth()
                                 .height(120.dp)
                                 .clip(RoundedCornerShape(8.dp))
@@ -205,11 +237,12 @@ fun HomeScreen(navController: NavController) {
                                     MaterialTheme.colorScheme.primary.copy(0.3f),
                                     RoundedCornerShape(8.dp)
                                 ),
-                            model = "",
+                            contentScale = ContentScale.FillBounds,
+                            model = place.photo,
                             contentDescription = ""
                         )
                         Text(
-                            text = "Chùa thiên mụ",
+                            text = place.name,
                             style = MaterialTheme.typography.titleSmall
                         )
                         Row(
@@ -217,20 +250,20 @@ fun HomeScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             RatingCustom(
-                                value = 2
+                                value = place.rating.toInt()
                             )
                             Text(
-                                text = "3.842",
+                                text = "${place.rating}",
                                 style = MaterialTheme.typography.headlineMedium
                             )
                         }
                         Text(
-                            text = "Địa điểm lịch sử",
+                            text = "${place.type}",
                             style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.outline
                         )
                         Text(
-                            text = "Huế, Việt Nam",
+                            text = "${place.city}",
                             style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.outline
                         )
@@ -314,6 +347,17 @@ fun HomeScreen(navController: NavController) {
                          modifier = Modifier
                              .clickable {
                                  navController.navigate("details/${place.business_id}/${place.latitude.toString()}/${place.longitude.toString()}")
+                                 val placeUpdates = mapOf(
+                                     "business_id" to place.business_id,
+                                     "name" to place.name,
+                                     "rating" to place.rating,
+                                     "type" to place.types.firstOrNull().orEmpty(),
+                                     "city" to place.city,
+                                     "photo" to place.photos.firstOrNull()?.src.orEmpty(),
+                                     "ltn" to place.latitude.toString(),
+                                     "lng" to place.longitude.toString()
+                                 )
+                                 databaseReference.child(place.business_id).setValue(placeUpdates)
                              }
                              .width(180.dp),
                          verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -405,6 +449,17 @@ fun HomeScreen(navController: NavController) {
                         modifier = Modifier
                             .clickable {
                                 navController.navigate("details/${restaurant.business_id}/${restaurant.latitude.toString()}/${restaurant.longitude.toString()}")
+                                val placeUpdates = mapOf(
+                                    "business_id" to restaurant.business_id,
+                                    "name" to restaurant.name,
+                                    "rating" to restaurant.rating,
+                                    "type" to restaurant.types.firstOrNull().orEmpty(),
+                                    "city" to restaurant.city,
+                                    "photo" to restaurant.photos.firstOrNull()?.src.orEmpty(),
+                                    "ltn" to restaurant.latitude.toString(),
+                                    "lng" to restaurant.longitude.toString()
+                                )
+                                databaseReference.child(restaurant.business_id).setValue(placeUpdates)
                             }
                             .width(180.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
