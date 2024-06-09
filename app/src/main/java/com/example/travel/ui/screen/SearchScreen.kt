@@ -319,6 +319,7 @@ fun SearchScreen(navController: NavController) {
                 ) {
                     Box(
                         modifier = Modifier
+                            .clickable { navController.navigate("nt") }
                             .weight(1f)
                             .height(160.dp)
                             .background(
@@ -332,6 +333,7 @@ fun SearchScreen(navController: NavController) {
                     }
                     Box(
                         modifier = Modifier
+                            .clickable { navController.navigate("dn") }
                             .weight(1f)
                             .height(160.dp)
                             .background(
@@ -351,6 +353,7 @@ fun SearchScreen(navController: NavController) {
                 ) {
                     Box(
                         modifier = Modifier
+                            .clickable { navController.navigate("hn") }
                             .weight(1f)
                             .height(160.dp)
                             .background(
@@ -364,6 +367,7 @@ fun SearchScreen(navController: NavController) {
                     }
                     Box(
                         modifier = Modifier
+                            .clickable { navController.navigate("vhl") }
                             .weight(1f)
                             .height(160.dp)
                             .background(

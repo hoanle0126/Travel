@@ -38,6 +38,7 @@ interface NearbyRepository {
         @Query("lng") lng: String = "",
         @Query("query") query: String? = "",
         @Query("country") country: String = "vietnam",
+        @Query("limit") limit: String = "20",
     ): nearby? = null
 }
 

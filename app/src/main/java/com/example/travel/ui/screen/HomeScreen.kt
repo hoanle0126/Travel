@@ -100,23 +100,6 @@ fun HomeScreen(navController: NavController) {
                 )
                 .padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 20.dp)
         ) {
-//            Avatar
-            Row {
-                Spacer(modifier = Modifier.weight(1f))
-                AsyncImage(
-                    model = "https://htmediagroup.vn/wp-content/uploads/2022/04/Anh-CV-chuyen-nghiep-min-1.jpg",
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(
-                            MaterialTheme.colorScheme.primaryContainer.copy(0.4f),
-                            RoundedCornerShape(99.dp)
-                        )
-                        .clip(RoundedCornerShape(99.dp)),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
-//            End avatar
 //            Title
             Row(
                 modifier = Modifier.fillMaxWidth()
@@ -136,6 +119,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Row(
                     modifier = Modifier
+                        .clickable { navController.navigate("hview-more") }
                         .weight(1f)
                         .height(60.dp)
                         .background(
@@ -155,6 +139,7 @@ fun HomeScreen(navController: NavController) {
 
                 Row(
                     modifier = Modifier
+                        .clickable { navController.navigate("rview-more") }
                         .weight(1f)
                         .height(60.dp)
                         .background(
@@ -296,7 +281,10 @@ fun HomeScreen(navController: NavController) {
                 Text(
                     text = "Xem thêm",
                     color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.clickable(onClick = {
+                        navController.navigate("hview-more")
+                    })
                 )
             }
             Text(
@@ -405,7 +393,10 @@ fun HomeScreen(navController: NavController) {
                 Text(
                     text = "Xem thêm",
                     color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.clickable(onClick = {
+                        navController.navigate("rview-more")
+                    })
                 )
             }
             Text(
@@ -549,6 +540,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                     Column(
                         modifier = Modifier
+                            .clickable { navController.navigate("vhl") }
                             .width(200.dp)
                             .height(120.dp)
                             .clip(RoundedCornerShape(8.dp))
@@ -569,6 +561,7 @@ fun HomeScreen(navController: NavController) {
                     }
                 Column(
                     modifier = Modifier
+                        .clickable { navController.navigate("nt") }
                         .width(200.dp)
                         .height(120.dp)
                         .clip(RoundedCornerShape(8.dp))
@@ -589,6 +582,7 @@ fun HomeScreen(navController: NavController) {
                 }
                 Column(
                     modifier = Modifier
+                        .clickable { navController.navigate("dn") }
                         .width(200.dp)
                         .height(120.dp)
                         .clip(RoundedCornerShape(8.dp))
@@ -609,6 +603,7 @@ fun HomeScreen(navController: NavController) {
                 }
                 Column(
                     modifier = Modifier
+                        .clickable { navController.navigate("hn") }
                         .width(200.dp)
                         .height(120.dp)
                         .clip(RoundedCornerShape(8.dp))

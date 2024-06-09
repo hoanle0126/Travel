@@ -8,13 +8,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.travel.data.`object`.AuthViewModel
 import com.example.travel.ui.screen.AccountScreen
+import com.example.travel.ui.screen.DNScreen
+import com.example.travel.ui.screen.HNScreen
 import com.example.travel.ui.screen.HomeScreen
 import com.example.travel.ui.screen.InfoPlaceScreen
 import com.example.travel.ui.screen.LoginScreen
+import com.example.travel.ui.screen.NTScreen
+import com.example.travel.ui.screen.RViewmoreScreen
 import com.example.travel.ui.screen.ReviewScreen
 import com.example.travel.ui.screen.SearchScreen
 import com.example.travel.ui.screen.SignupScreen
 import com.example.travel.ui.screen.ToDoScreen
+import com.example.travel.ui.screen.VHLScreen
+import com.example.travel.ui.screen.ViewmoreScreen
 
 @Composable
 fun MainNavigation() {
@@ -49,11 +55,29 @@ fun MainNavigation() {
         composable("to-do"){
             ToDoScreen(navController = navController)
         }
+        composable("hview-more"){
+            ViewmoreScreen(navController = navController)
+        }
+        composable("rview-more"){
+            RViewmoreScreen(navController = navController)
+        }
         composable("review"){
             ReviewScreen(navController = navController)
         }
         composable("account"){
             AccountScreen(navController = navController)
+        }
+        composable("vhl"){
+            VHLScreen(navController = navController)
+        }
+        composable("dn"){
+            DNScreen(navController = navController)
+        }
+        composable("nt"){
+            NTScreen(navController = navController)
+        }
+        composable("hn"){
+            HNScreen(navController = navController)
         }
         composable("details/{id}/{lat}/{lng}", arguments = listOf(
             navArgument("id") { type = NavType.StringType },
