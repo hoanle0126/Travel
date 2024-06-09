@@ -275,40 +275,40 @@ fun HomeScreen(navController: NavController) {
         }
 //
 //        Khám phá thêm tại
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth()
-                .background(
-                    MaterialTheme.colorScheme.secondary,
-                    RoundedCornerShape(12.dp)
-                )
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Khám phá thêm tại\nHuế",
-                style = MaterialTheme.typography.displayLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSecondary
-            )
-            OutlinedButton(
-                onClick = { /*TODO*/ },
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                border = BorderStroke(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.onSecondary
-                )
-            ) {
-                Text(
-                    text = "Tiếp tục khám phá",
-                    style = MaterialTheme.typography.titleSmall
-                )
-            }
-        }
+//        Column(
+//            modifier = Modifier
+//                .padding(horizontal = 20.dp)
+//                .fillMaxWidth()
+//                .background(
+//                    MaterialTheme.colorScheme.secondary,
+//                    RoundedCornerShape(12.dp)
+//                )
+//                .padding(20.dp),
+//            verticalArrangement = Arrangement.spacedBy(12.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            Text(
+//                text = "Khám phá thêm tại\nHuế",
+//                style = MaterialTheme.typography.displayLarge,
+//                textAlign = TextAlign.Center,
+//                color = MaterialTheme.colorScheme.onSecondary
+//            )
+//            OutlinedButton(
+//                onClick = { /*TODO*/ },
+//                colors = ButtonDefaults.outlinedButtonColors(
+//                    contentColor = MaterialTheme.colorScheme.onSecondary
+//                ),
+//                border = BorderStroke(
+//                    width = 2.dp,
+//                    color = MaterialTheme.colorScheme.onSecondary
+//                )
+//            ) {
+//                Text(
+//                    text = "Tiếp tục khám phá",
+//                    style = MaterialTheme.typography.titleSmall
+//                )
+//            }
+//        }
 //
 //            Khách sạn giá rẻ gần bạn
         Column(
@@ -323,7 +323,7 @@ fun HomeScreen(navController: NavController) {
                 verticalAlignment = Alignment.Top
             ) {
                 Text(
-                    text = "Khách sạn giá rẻ gần\nbạn",
+                    text = "Khách sạn giá rẻ",
                     style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -432,7 +432,7 @@ fun HomeScreen(navController: NavController) {
                 verticalAlignment = Alignment.Top
             ) {
                 Text(
-                    text = "Nhà hàng lân cận",
+                    text = "Nhà hàng phổ biến",
                     style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -546,19 +546,10 @@ fun HomeScreen(navController: NavController) {
                 color = MaterialTheme.colorScheme.surface
             )
             Text(
-                text = "Từ Vịnh Hạ Long đến Nha Trang",
+                text = "Từ Vịnh Hạ Long đến Nha Trang và các nơi khác",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.surface
             )
-            Button(
-                onClick = { /*TODO*/ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                )
-            ) {
-                Text(text = "Đọc thêm", style = MaterialTheme.typography.titleMedium)
-            }
         }
 //
 //  Điểm đến hàng đầu cho kì nghỉ tiếp theo của bạn
@@ -578,11 +569,6 @@ fun HomeScreen(navController: NavController) {
                     style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "Xem thêm",
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleSmall
-                )
             }
             Text(
                 text = "Đây là địa điểm thu hút nhiều khách du lịch",
@@ -595,7 +581,6 @@ fun HomeScreen(navController: NavController) {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                repeat(12) {
                     Column(
                         modifier = Modifier
                             .width(200.dp)
@@ -616,6 +601,65 @@ fun HomeScreen(navController: NavController) {
                             color = MaterialTheme.colorScheme.surface
                         )
                     }
+                Column(
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .paint(
+                            painter = painterResource(id = R.drawable.vinh_ha_long),
+                            contentScale = ContentScale.FillBounds,
+                            alpha = 0.8f
+                        )
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = "Nha Trang",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .paint(
+                            painter = painterResource(id = R.drawable.vinh_ha_long),
+                            contentScale = ContentScale.FillBounds,
+                            alpha = 0.8f
+                        )
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = "Đà Nẵng",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .paint(
+                            painter = painterResource(id = R.drawable.vinh_ha_long),
+                            contentScale = ContentScale.FillBounds,
+                            alpha = 0.8f
+                        )
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = "Hà Nội",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.surface
+                    )
                 }
             }
         }

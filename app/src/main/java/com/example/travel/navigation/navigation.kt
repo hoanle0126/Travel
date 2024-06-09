@@ -37,7 +37,13 @@ fun MainNavigation() {
         composable("login"){
             LoginScreen(navController = navController)
         }
-        composable("search"){
+        composable("search")
+        {
+            SearchScreen(navController = navController)
+        }
+        composable("search/{query}", arguments = listOf(
+            navArgument("query"){type = NavType.StringType}))
+        {
             SearchScreen(navController = navController)
         }
         composable("to-do"){
