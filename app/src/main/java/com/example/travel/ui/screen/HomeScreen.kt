@@ -1,7 +1,6 @@
 package com.example.travel.ui.screen
 
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -17,11 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -157,32 +152,7 @@ fun HomeScreen(navController: NavController) {
                     )
                     Text(text = "Khách sạn", style = MaterialTheme.typography.headlineLarge)
                 }
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(60.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ion_ticket_outline),
-                        contentDescription = ""
-                    )
-                    Text(
-                        text = "Hoạt động\ngiải trí", style = MaterialTheme.typography.headlineLarge
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+
                 Row(
                     modifier = Modifier
                         .weight(1f)
@@ -201,12 +171,8 @@ fun HomeScreen(navController: NavController) {
                     )
                     Text(text = "Nhà hàng", style = MaterialTheme.typography.headlineLarge)
                 }
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(60.dp)
-                )
             }
+            Spacer(modifier = Modifier.height(12.dp))
 //            End category
         }
 //            Đã xem gần đây

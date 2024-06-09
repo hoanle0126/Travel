@@ -68,14 +68,6 @@ fun DefaultLayout(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            modifier = Modifier
-                                .size(24.dp),
-                            painter = painterResource(id = R.drawable.icon_outlined_heart),
-                            contentDescription = ""
-                        )
-                    }
                 }
             }
         },

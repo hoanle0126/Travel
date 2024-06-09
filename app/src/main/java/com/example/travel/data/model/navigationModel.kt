@@ -32,12 +32,6 @@ class ListNavigationModel(){
                 iconBold = R.drawable.icon_bold_heart
             ),
             NavigationModel(
-                route = "review",
-                name = "Đánh giá",
-                icon = R.drawable.icon_outlined_pen,
-                iconBold = R.drawable.icon_bold_pen
-            ),
-            NavigationModel(
                 route = "account",
                 name = "Tài khoản",
                 icon = R.drawable.icon_outlined_profile,

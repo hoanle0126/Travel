@@ -27,6 +27,7 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -226,6 +227,16 @@ fun InfoPlaceScreen(navController: NavController) {
                     style = MaterialTheme.typography.titleLarge,
                 )
             }
+            IconButton(
+                modifier = Modifier
+                    .height(56.dp), // Set to match button height
+                onClick = { /*TODO*/ }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_outlined_heart),
+                    contentDescription = ""
+                )
+            }
         }
 //
 //        Giờ làm việc
@@ -282,15 +293,19 @@ fun InfoPlaceScreen(navController: NavController) {
                                 "business_id" to nearby.business_id,
                                 "name" to nearby.name,
                                 "rating" to nearby.rating,
-                                "type" to nearby.types.firstOrNull().orEmpty(),
+                                "type" to nearby.types
+                                    .firstOrNull()
+                                    .orEmpty(),
                                 "city" to nearby.city,
                                 "photo" to nearby.photos.firstOrNull()?.src.orEmpty(),
                                 "ltn" to nearby.latitude.toString(),
                                 "lng" to nearby.longitude.toString(),
                                 "user" to currentUserEmail
                             )
-                            databaseReference.child(nearby.business_id).setValue(placeUpdates)
-                                   },
+                            databaseReference
+                                .child(nearby.business_id)
+                                .setValue(placeUpdates)
+                        },
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     nearby.photos?.take(1)?.forEach { photo ->
@@ -368,15 +383,19 @@ fun InfoPlaceScreen(navController: NavController) {
                                     "business_id" to nearbyres.business_id,
                                     "name" to nearbyres.name,
                                     "rating" to nearbyres.rating,
-                                    "type" to nearbyres.types.firstOrNull().orEmpty(),
+                                    "type" to nearbyres.types
+                                        .firstOrNull()
+                                        .orEmpty(),
                                     "city" to nearbyres.city,
                                     "photo" to nearbyres.photos.firstOrNull()?.src.orEmpty(),
                                     "ltn" to nearbyres.latitude.toString(),
                                     "lng" to nearbyres.longitude.toString(),
                                     "user" to currentUserEmail
                                 )
-                                databaseReference.child(nearbyres.business_id).setValue(placeUpdates)
-                                       },
+                                databaseReference
+                                    .child(nearbyres.business_id)
+                                    .setValue(placeUpdates)
+                            },
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         nearbyres.photos?.take(1)?.forEach { photo ->
