@@ -9,4 +9,5 @@ data class Place(
     val photo: String = "",
     val ltn: String = "",
     val lng: String = "",
+    val user: String = ""
 )

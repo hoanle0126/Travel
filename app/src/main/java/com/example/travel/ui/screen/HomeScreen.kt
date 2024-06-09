@@ -1,5 +1,6 @@
 package com.example.travel.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,18 +34,16 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.travel.R
 import com.example.travel.data.model.Firebase.Place
-import com.example.travel.data.model.PlacesList.Photo
-import com.example.travel.data.`object`.DetailsObject
+import com.example.travel.data.`object`.AuthViewModel
 import com.example.travel.data.`object`.PlaceObject
 import com.example.travel.data.`object`.RestaurantObject
 import com.example.travel.ui.component.RatingCustom
@@ -57,11 +56,14 @@ import com.google.firebase.database.ValueEventListener
 
 @Composable
 fun HomeScreen(navController: NavController) {
+    val context = LocalContext.current
     val places: PlaceObject = viewModel()
     val restaurants: RestaurantObject = viewModel()
     val database: FirebaseDatabase = FirebaseDatabase.getInstance("https://travel-f4cbd-default-rtdb.asia-southeast1.firebasedatabase.app")
     val databaseReference: DatabaseReference = database.reference.child("Places")
     val recentPlaces = remember { mutableStateOf<List<Place>>(emptyList()) }
+    val authViewModel: AuthViewModel = viewModel()
+    val currentUserEmail = authViewModel.user?.email
 
     LaunchedEffect(Unit) {
         databaseReference.addValueEventListener(object : ValueEventListener {
@@ -69,7 +71,7 @@ fun HomeScreen(navController: NavController) {
                 val placesList = mutableListOf<Place>()
                 for (placeSnapshot in snapshot.children) {
                     val place = placeSnapshot.getValue(Place::class.java)
-                    if (place != null) {
+                    if (place != null && place.user == currentUserEmail) {
                         placesList.add(place)
                     }
                 }
@@ -77,7 +79,7 @@ fun HomeScreen(navController: NavController) {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle database error
+                Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -351,13 +353,14 @@ fun HomeScreen(navController: NavController) {
                                      "business_id" to place.business_id,
                                      "name" to place.name,
                                      "rating" to place.rating,
-                                     "type" to place.types.firstOrNull().orEmpty(),
+                                     "type" to place.types?.firstOrNull().orEmpty(),
                                      "city" to place.city,
-                                     "photo" to place.photos.firstOrNull()?.src.orEmpty(),
+                                     "photo" to place.photos?.firstOrNull()?.src.orEmpty(),
                                      "ltn" to place.latitude.toString(),
-                                     "lng" to place.longitude.toString()
+                                     "lng" to place.longitude.toString(),
+                                     "user" to currentUserEmail
                                  )
-                                 databaseReference.child(place.business_id).setValue(placeUpdates)
+                                 place.business_id?.let { databaseReference.child(it).setValue(placeUpdates) }
                              }
                              .width(180.dp),
                          verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -377,34 +380,40 @@ fun HomeScreen(navController: NavController) {
                                  contentDescription = ""
                              )
                          }
-                         Text(
-                             text = place.name,
-                             style = MaterialTheme.typography.titleSmall
-                         )
+                         place.name?.let {
+                             Text(
+                                 text = it,
+                                 style = MaterialTheme.typography.titleSmall
+                             )
+                         }
                          Row(
                              verticalAlignment = Alignment.CenterVertically,
                              horizontalArrangement = Arrangement.spacedBy(8.dp)
                          ) {
-                             RatingCustom(
-                                 value = place.rating.toInt()
-                             )
+                             place.rating?.let {
+                                 RatingCustom(
+                                     value = it.toInt()
+                                 )
+                             }
                              Text(
                                  text = place.rating.toString(),
                                  style = MaterialTheme.typography.headlineMedium
                              )
                          }
-                         place.types.take(1).forEach{ type ->
+                         place.types?.take(1)?.forEach{ type ->
                              Text(
                                  text = type,
                                  style = MaterialTheme.typography.headlineMedium,
                                  color = MaterialTheme.colorScheme.outline
                              )
                          }
-                         Text(
-                             text = place.city,
-                             style = MaterialTheme.typography.headlineMedium,
-                             color = MaterialTheme.colorScheme.outline
-                         )
+                         place.city?.let {
+                             Text(
+                                 text = it,
+                                 style = MaterialTheme.typography.headlineMedium,
+                                 color = MaterialTheme.colorScheme.outline
+                             )
+                         }
                      }
                  }
             }
@@ -453,13 +462,14 @@ fun HomeScreen(navController: NavController) {
                                     "business_id" to restaurant.business_id,
                                     "name" to restaurant.name,
                                     "rating" to restaurant.rating,
-                                    "type" to restaurant.types.firstOrNull().orEmpty(),
+                                    "type" to restaurant.types?.firstOrNull().orEmpty(),
                                     "city" to restaurant.city,
-                                    "photo" to restaurant.photos.firstOrNull()?.src.orEmpty(),
+                                    "photo" to restaurant.photos?.firstOrNull()?.src.orEmpty(),
                                     "ltn" to restaurant.latitude.toString(),
-                                    "lng" to restaurant.longitude.toString()
+                                    "lng" to restaurant.longitude.toString(),
+                                    "user" to currentUserEmail
                                 )
-                                databaseReference.child(restaurant.business_id).setValue(placeUpdates)
+                                restaurant.business_id?.let { databaseReference.child(it).setValue(placeUpdates) }
                             }
                             .width(180.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -479,34 +489,40 @@ fun HomeScreen(navController: NavController) {
                                 contentDescription = ""
                             )
                         }
-                        Text(
-                            text = restaurant.name,
-                            style = MaterialTheme.typography.titleSmall
-                        )
+                        restaurant.name?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                        }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            RatingCustom(
-                                value = restaurant.rating.toInt()
-                            )
+                            restaurant.rating?.let {
+                                RatingCustom(
+                                    value = it.toInt()
+                                )
+                            }
                             Text(
                                 text = restaurant.rating.toString(),
                                 style = MaterialTheme.typography.headlineMedium
                             )
                         }
-                        restaurant.types.take(1).forEach{ type ->
+                        restaurant.types?.take(1)?.forEach{ type ->
                             Text(
                                 text = type,
                                 style = MaterialTheme.typography.headlineMedium,
                                 color = MaterialTheme.colorScheme.outline
                             )
                         }
-                        Text(
-                            text = restaurant.city,
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.outline
-                        )
+                        restaurant.city?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        }
                     }
                 }
             }

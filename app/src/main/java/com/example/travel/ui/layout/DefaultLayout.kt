@@ -59,7 +59,7 @@ fun DefaultLayout(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.navigate("home") }) {
                         Icon(
                             modifier = Modifier
                                 .size(32.dp),
@@ -75,13 +75,6 @@ fun DefaultLayout(
                             painter = painterResource(id = R.drawable.icon_outlined_heart),
                             contentDescription = ""
                         )
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            modifier = Modifier
-                                .size(24.dp),
-                            imageVector = Icons.Rounded.Share,
-                            contentDescription = "")
                     }
                 }
             }

@@ -23,12 +23,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -46,7 +44,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -56,6 +53,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.travel.R
 import com.example.travel.data.model.PlaceDetails.Photo
+import com.example.travel.data.`object`.AuthViewModel
 import com.example.travel.data.`object`.DetailsObject
 import com.example.travel.data.`object`.NearbyObject
 import com.example.travel.data.`object`.NearbyRestaurantObject
@@ -91,6 +89,8 @@ fun InfoPlaceScreen(navController: NavController) {
     val reviews: ReviewsObject = viewModel(factory = factory4)
     val database: FirebaseDatabase = FirebaseDatabase.getInstance("https://travel-f4cbd-default-rtdb.asia-southeast1.firebasedatabase.app")
     val databaseReference: DatabaseReference = database.reference.child("Places")
+    val authViewModel: AuthViewModel = viewModel()
+    val currentUserEmail = authViewModel.user?.email
 
     DefaultLayout(
         navController = navController,
@@ -101,7 +101,7 @@ fun InfoPlaceScreen(navController: NavController) {
         details.detailsResult?.data?.forEach { details ->
             LazyRow{
                 item {
-                    details.photos.forEach{ photo ->
+                    details.photos?.forEach{ photo ->
                         AsyncImage(
                             model = photo.url,
                             contentDescription = "",
@@ -124,10 +124,12 @@ fun InfoPlaceScreen(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
     //            Title
-                Text(
-                    text = details.name,
-                    style = MaterialTheme.typography.displayMedium
-                )
+                details.name?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.displayMedium
+                    )
+                }
     //            End title
     //            Review
                 Row(
@@ -284,7 +286,8 @@ fun InfoPlaceScreen(navController: NavController) {
                                 "city" to nearby.city,
                                 "photo" to nearby.photos.firstOrNull()?.src.orEmpty(),
                                 "ltn" to nearby.latitude.toString(),
-                                "lng" to nearby.longitude.toString()
+                                "lng" to nearby.longitude.toString(),
+                                "user" to currentUserEmail
                             )
                             databaseReference.child(nearby.business_id).setValue(placeUpdates)
                                    },
@@ -369,7 +372,8 @@ fun InfoPlaceScreen(navController: NavController) {
                                     "city" to nearbyres.city,
                                     "photo" to nearbyres.photos.firstOrNull()?.src.orEmpty(),
                                     "ltn" to nearbyres.latitude.toString(),
-                                    "lng" to nearbyres.longitude.toString()
+                                    "lng" to nearbyres.longitude.toString(),
+                                    "user" to currentUserEmail
                                 )
                                 databaseReference.child(nearbyres.business_id).setValue(placeUpdates)
                                        },
@@ -587,12 +591,14 @@ fun Tabs(details: DetailsObject?, reviews: ReviewsObject?) {
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            RatingCustom(
-                                value = details.rating.toInt(),
-                                size = 1.5f,
-                                modifier = Modifier
-                                    .width(140.dp)
-                            )
+                            details.rating?.let {
+                                RatingCustom(
+                                    value = it.toInt(),
+                                    size = 1.5f,
+                                    modifier = Modifier
+                                        .width(140.dp)
+                                )
+                            }
                             Text(text = "${details.review_count} đã đánh giá", style = MaterialTheme.typography.bodySmall)
                         }
                     }
@@ -664,24 +670,32 @@ fun Tabs(details: DetailsObject?, reviews: ReviewsObject?) {
                                         .padding(vertical = 4.dp),
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text(
-                                        text = reviews.user_name,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text(
-                                        text = reviews.review_time,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
+                                    reviews.user_name?.let {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                    }
+                                    reviews.review_time?.let {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
                                 }
                             }
-                            RatingCustom(
-                                value = reviews.review_rate.toInt(),
-                                size = 1.5f
-                            )
-                            Text(
-                                style = MaterialTheme.typography.bodyMedium,
-                                text = reviews.review_text
-                            )
+                            reviews.review_rate?.let {
+                                RatingCustom(
+                                    value = it.toInt(),
+                                    size = 1.5f
+                                )
+                            }
+                            reviews.review_text?.let {
+                                Text(
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = it
+                                )
+                            }
                             reviews.review_photos?.take(3)?.forEach{ photo ->
                                 AsyncImage(
                                     model = photo,
