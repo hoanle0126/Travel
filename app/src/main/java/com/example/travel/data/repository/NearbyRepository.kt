@@ -17,7 +17,7 @@ val client3 = OkHttpClient.Builder()
     .readTimeout(100, TimeUnit.SECONDS)
     .addInterceptor{
         val request: Request = it.request().newBuilder()
-            .addHeader("X-RapidAPI-Key", "31393214b8mshb27dfe97a14b1ebp1b9f16jsnccce8cc1fc49")
+            .addHeader("X-RapidAPI-Key", "622337b20amsh77c2842aa285727p143b72jsnc6d8ac1c8957")
             .addHeader("X-RapidAPI-Host", "maps-data.p.rapidapi.com")
             .build()
         it.proceed(request)
