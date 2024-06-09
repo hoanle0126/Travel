@@ -570,38 +570,38 @@ fun Tabs(details: DetailsObject?, reviews: ReviewsObject?) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 //                OutlinedTextField
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    value = "",
-                    onValueChange = {},
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.icon_outlined_search),
-                            contentDescription = ""
-                        )
-                    },
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    shape = RoundedCornerShape(99.dp),
-                    label = {
-                        Text(
-                            text = "Tìm kiếm đánh giá",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-
-                    ),
-                )
+//                OutlinedTextField(
+//                    modifier = Modifier
+//                        .fillMaxWidth(),
+//                    value = "",
+//                    onValueChange = {},
+//                    leadingIcon = {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.icon_outlined_search),
+//                            contentDescription = ""
+//                        )
+//                    },
+//                    textStyle = MaterialTheme.typography.bodyMedium,
+//                    shape = RoundedCornerShape(99.dp),
+//                    label = {
+//                        Text(
+//                            text = "Tìm kiếm đánh giá",
+//                            style = MaterialTheme.typography.bodyMedium
+//                        )
+//                    },
+//                    colors = OutlinedTextFieldDefaults.colors(
 //
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .background(
-                            MaterialTheme.colorScheme.outline.copy(0.6f)
-                        )
-                )
+//                    ),
+                //)
+//
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(2.dp)
+//                        .background(
+//                            MaterialTheme.colorScheme.outline.copy(0.6f)
+//                        )
+//                )
 //                Thống kê đánh giá
                 if (details != null) {
                     details.detailsResult?.data?.forEach { details ->
