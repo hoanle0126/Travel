@@ -1,14 +1,18 @@
-package com.example.travel.data.`object`
+package com.example.travel.data.controller
 
 import android.content.Context
+import android.net.Uri
 import android.widget.Toast
 import androidx.navigation.NavController
 import com.example.travel.R
+import com.example.travel.data.`object`.AuthViewModel
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
+import com.google.firebase.auth.userProfileChangeRequest
 
-class AuthController(context: Context,navController: NavController) {
+class AuthController(context: Context, private val navController: NavController) {
     private val auth = AuthViewModel().auth
-    private val navController = navController
 
     private val toastEmpty = Toast.makeText(
         context,
@@ -24,7 +28,7 @@ class AuthController(context: Context,navController: NavController) {
 
     private val toastSuccessful = Toast.makeText(
         context,
-        "Login Successfully",
+        R.string.successfully,
         Toast.LENGTH_SHORT
     )
 
@@ -66,7 +70,7 @@ class AuthController(context: Context,navController: NavController) {
         }
     }
 
-    fun signup(email:String,password: String,confirmPassword:String){
+    fun signup(name:String,email:String,password: String,confirmPassword:String){
         if( email.isEmpty()||password.isEmpty()||confirmPassword.isEmpty() ){
             toastEmpty.show()
         }
@@ -78,6 +82,14 @@ class AuthController(context: Context,navController: NavController) {
                             if (it.isSuccessful) {
                                 val user = auth.currentUser
                                 updateUI(user)
+
+                                user?.updateProfile(
+                                    userProfileChangeRequest {
+                                        displayName = name
+                                        photoUri = Uri.EMPTY
+                                    }
+                                )
+
                                 navController.navigate("home")
                             } else {
                                 toastEmailInvaild.show()

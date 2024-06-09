@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Travel</string>
+    <string name="successfully">Successfully!</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiaG9hbmxlMDEyNiIsImEiOiJjbHZyeGwzdmkwdWR5MmtwMTBwYWd3cDIyIn0.PIxdMnf3YAuUjrAqP5FSsw</string>
 </resources>

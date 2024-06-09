@@ -45,10 +45,13 @@ fun DefaultLayout(
     navController: NavController = rememberNavController(),
     contentSpacing: Dp = 0.dp,
     topAppBar: Boolean = false,
+    contentPadding: Dp = 0.dp,
     content: @Composable () -> Unit
 ) {
     val currentRoute = navController.currentDestination?.route.toString()
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
         topBar = {
             if(topAppBar){
                 Row(
@@ -136,6 +139,7 @@ fun DefaultLayout(
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
+                .padding(contentPadding)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(contentSpacing)
         ) {

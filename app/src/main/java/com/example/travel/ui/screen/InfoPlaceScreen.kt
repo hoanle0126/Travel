@@ -54,6 +54,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.travel.R
 import com.example.travel.data.model.PlaceDetails.Photo
+import com.example.travel.data.model.ToDo
 import com.example.travel.data.`object`.AuthViewModel
 import com.example.travel.data.`object`.DetailsObject
 import com.example.travel.data.`object`.NearbyObject
@@ -64,11 +65,15 @@ import com.example.travel.ui.layout.DefaultLayout
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
 
 @Composable
 fun InfoPlaceScreen(navController: NavController) {
+    val ref = Firebase.database.reference
+    val toDoDatabase = ref.child("ToDo")
     val currentBackStackEntry = navController.currentBackStackEntry
     val factory = DetailsFactory(
         currentBackStackEntry?.arguments?.getString("id").toString()
@@ -100,21 +105,7 @@ fun InfoPlaceScreen(navController: NavController) {
     ) {
 //        Carousel
         details.detailsResult?.data?.forEach { details ->
-            LazyRow{
-                item {
-                    details.photos?.forEach{ photo ->
-                        AsyncImage(
-                            model = photo.url,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(280.dp)
-                                .background(MaterialTheme.colorScheme.primary.copy(0.3f)),
-                            contentScale = ContentScale.FillHeight
-                        )
-                    }
-                }
-            }
+            Carousel(images = details.photos)
         }
 //        End carousel
 //
@@ -192,7 +183,11 @@ fun InfoPlaceScreen(navController: NavController) {
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.primary
                 ),
-                onClick = { /*TODO*/ }
+                onClick = { ToDo(
+                    place = details.detailsResult!!,
+                    name = details.detailsResult?.data?.random()?.name.toString(),
+                    email = AuthViewModel().user?.email!!
+                ) }
             ) {
                 Icon(
                     tint = MaterialTheme.colorScheme.primary,
@@ -215,7 +210,7 @@ fun InfoPlaceScreen(navController: NavController) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                onClick = { /*TODO*/ }
+                onClick = { navController.navigate("map/${details.detailsResult?.data?.first()?.latitude}/${details.detailsResult?.data?.first()?.longitude}") }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_bold_send),
@@ -225,16 +220,6 @@ fun InfoPlaceScreen(navController: NavController) {
                 Text(
                     text = "Địa chỉ",
                     style = MaterialTheme.typography.titleLarge,
-                )
-            }
-            IconButton(
-                modifier = Modifier
-                    .height(56.dp), // Set to match button height
-                onClick = { /*TODO*/ }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_outlined_heart),
-                    contentDescription = ""
                 )
             }
         }
@@ -318,7 +303,8 @@ fun InfoPlaceScreen(navController: NavController) {
                                 .background(
                                     MaterialTheme.colorScheme.primary.copy(0.3f),
                                     RoundedCornerShape(4.dp)
-                                )
+                                ),
+                            contentScale = ContentScale.FillBounds
                         )
                     }
                     Column(
@@ -408,7 +394,8 @@ fun InfoPlaceScreen(navController: NavController) {
                                     .background(
                                         MaterialTheme.colorScheme.primary.copy(0.3f),
                                         RoundedCornerShape(4.dp)
-                                    )
+                                    ),
+                                contentScale = ContentScale.FillBounds
                             )
                         }
                         Column(
@@ -469,7 +456,7 @@ fun Carousel(images: List<Photo>?) {
         state = pagerState,
         count = it.size,
         modifier = Modifier
-            .fillMaxHeight()
+            .height(280.dp)
             .fillMaxWidth()
     ) { page ->
         Image(
