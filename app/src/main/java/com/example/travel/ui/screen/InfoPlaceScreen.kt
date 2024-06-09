@@ -614,26 +614,100 @@ fun Tabs(details: DetailsObject?, reviews: ReviewsObject?) {
                         .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    repeat(5) {
-                        Row(
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .width(140.dp),
-                                text = "Xuất sắc",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            LinearProgressIndicator(
-                                progress = 0.6f,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(12.dp)
-                                    .clip(RoundedCornerShape(99.dp))
-                            )
-                        }
+                                .width(140.dp),
+                            text = "Xuất sắc",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.2f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .width(140.dp),
+                            text = "Rất tốt",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.1f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .width(140.dp),
+                            text = "Trung bình",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.6f,
+                            modifier = Modifier
+                                .weight(5f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .width(140.dp),
+                            text = "Tồi tệ",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.1f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .width(140.dp),
+                            text = "Tệ",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.1f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
                     }
                 }
 //
