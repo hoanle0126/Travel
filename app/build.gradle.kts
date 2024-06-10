@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.appcheck.playintegrity)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -92,4 +94,8 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-pager:0.24.3-alpha")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.24.3-alpha")
+
+
+    implementation("com.mapbox.maps:android:11.3.1")
+    implementation("com.mapbox.extension:maps-compose:11.3.1")
 }

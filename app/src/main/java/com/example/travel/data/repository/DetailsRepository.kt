@@ -10,13 +10,14 @@ import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 private const val BASE_URL = "https://maps-data.p.rapidapi.com"
+const val token = "d0333ee252msh36b10258a7c5192p1b0830jsn65cdbd76ba15"
 
 val client2 = OkHttpClient.Builder()
     .connectTimeout(100, TimeUnit.SECONDS)
     .readTimeout(100, TimeUnit.SECONDS)
     .addInterceptor{
         val request: Request = it.request().newBuilder()
-            .addHeader("X-RapidAPI-Key", "54b12c1bd0mshc107b6188b97781p199c35jsncfb73a628b1e")
+            .addHeader("X-RapidAPI-Key", token)
             .addHeader("X-RapidAPI-Host", "maps-data.p.rapidapi.com")
             .build()
         it.proceed(request)

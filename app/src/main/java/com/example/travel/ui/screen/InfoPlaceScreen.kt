@@ -1,5 +1,8 @@
 package com.example.travel.ui.screen
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -37,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -53,7 +58,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.travel.R
+import com.example.travel.data.model.Firebase.LocationData
 import com.example.travel.data.model.PlaceDetails.Photo
+import com.example.travel.data.model.ToDo
 import com.example.travel.data.`object`.AuthViewModel
 import com.example.travel.data.`object`.DetailsObject
 import com.example.travel.data.`object`.NearbyObject
@@ -64,11 +71,23 @@ import com.example.travel.ui.layout.DefaultLayout
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.firebase.Firebase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
+import java.util.Calendar
 
 @Composable
 fun InfoPlaceScreen(navController: NavController) {
+    val calendar = Calendar.getInstance()
+    var selectedDate by remember { mutableStateOf("") }
+    var selectedTime by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val ref = Firebase.database.reference
+    val toDoDatabase = ref.child("ToDo")
     val currentBackStackEntry = navController.currentBackStackEntry
     val factory = DetailsFactory(
         currentBackStackEntry?.arguments?.getString("id").toString()
@@ -100,21 +119,7 @@ fun InfoPlaceScreen(navController: NavController) {
     ) {
 //        Carousel
         details.detailsResult?.data?.forEach { details ->
-            LazyRow{
-                item {
-                    details.photos?.forEach{ photo ->
-                        AsyncImage(
-                            model = photo.url,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(280.dp)
-                                .background(MaterialTheme.colorScheme.primary.copy(0.3f)),
-                            contentScale = ContentScale.FillHeight
-                        )
-                    }
-                }
-            }
+            Carousel(images = details.photos)
         }
 //        End carousel
 //
@@ -192,7 +197,53 @@ fun InfoPlaceScreen(navController: NavController) {
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.primary
                 ),
-                onClick = { /*TODO*/ }
+                onClick = { if (currentUserEmail != null){
+                    if(currentUserEmail != null){
+                        if (selectedDate.isNotBlank() && selectedTime.isNotBlank()) {
+                            val database = FirebaseDatabase.getInstance("https://travel-f4cbd-default-rtdb.asia-southeast1.firebasedatabase.app")
+                            val refData: DatabaseReference = database.reference.child("Location")
+
+                            refData.orderByChild("user").equalTo(currentUserEmail).addListenerForSingleValueEvent(object :
+                                ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    var isConflict = false
+                                    for (data in snapshot.children) {
+                                        val location = data.getValue(LocationData::class.java)
+                                        if (location != null && location.date == selectedDate && location.time == selectedTime) {
+                                            isConflict = true
+                                            break
+                                        }
+                                    }
+                                    details.detailsResult?.data?.forEach { details ->
+                                        if (isConflict) {
+                                            Toast.makeText(context, "Date and time are already in use", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            // No conflict, add the location
+                                            val locationData = LocationData(
+                                                name = details.name ?: "",
+                                                full_address = details.full_address ?: "",
+                                                date = selectedDate,
+                                                time = selectedTime,
+                                                user = currentUserEmail?: "User"
+                                            )
+                                            refData.push().setValue(locationData)
+                                            Toast.makeText(context, "Added", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        } else {
+                            Toast.makeText(context, "Please select a date and time", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }else {
+                    Toast.makeText(context, "Please login first", Toast.LENGTH_SHORT).show()
+                    navController.navigate("login")
+                } }
             ) {
                 Icon(
                     tint = MaterialTheme.colorScheme.primary,
@@ -215,7 +266,7 @@ fun InfoPlaceScreen(navController: NavController) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                onClick = { /*TODO*/ }
+                onClick = { navController.navigate("map/${details.detailsResult?.data?.first()?.latitude}/${details.detailsResult?.data?.first()?.longitude}") }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_bold_send),
@@ -227,14 +278,58 @@ fun InfoPlaceScreen(navController: NavController) {
                     style = MaterialTheme.typography.titleLarge,
                 )
             }
-            IconButton(
+        }
+        //
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedButton(
                 modifier = Modifier
-                    .height(56.dp), // Set to match button height
-                onClick = { /*TODO*/ }
+                    .weight(1f),
+                shape = RoundedCornerShape(20.dp),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                border = BorderStroke(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
+                ),
+                onClick = { // Time Picker Dialog
+                    // Date Picker Dialog
+                    DatePickerDialog(context, { _, year, month, dayOfMonth ->
+                        selectedDate = "$dayOfMonth/${month + 1}/$year"
+                        Toast.makeText(context, "Date: $selectedDate", Toast.LENGTH_SHORT).show()
+                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+                }
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_outlined_heart),
-                    contentDescription = ""
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Đặt ngày/tháng",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            OutlinedButton(
+                modifier = Modifier
+                    .weight(1f),
+                shape = RoundedCornerShape(20.dp),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                onClick = { // Time Picker Dialog
+                    TimePickerDialog(context, { _, hourOfDay, minute ->
+                        selectedTime = String.format("%02d:%02d", hourOfDay, minute)
+                        Toast.makeText(context, "Time: $selectedTime", Toast.LENGTH_SHORT).show()
+                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+                }
+            ) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Đặt thời gian",
+                    style = MaterialTheme.typography.titleLarge,
                 )
             }
         }
@@ -318,7 +413,8 @@ fun InfoPlaceScreen(navController: NavController) {
                                 .background(
                                     MaterialTheme.colorScheme.primary.copy(0.3f),
                                     RoundedCornerShape(4.dp)
-                                )
+                                ),
+                            contentScale = ContentScale.FillBounds
                         )
                     }
                     Column(
@@ -408,7 +504,8 @@ fun InfoPlaceScreen(navController: NavController) {
                                     .background(
                                         MaterialTheme.colorScheme.primary.copy(0.3f),
                                         RoundedCornerShape(4.dp)
-                                    )
+                                    ),
+                                contentScale = ContentScale.FillBounds
                             )
                         }
                         Column(
@@ -469,7 +566,7 @@ fun Carousel(images: List<Photo>?) {
         state = pagerState,
         count = it.size,
         modifier = Modifier
-            .fillMaxHeight()
+            .height(280.dp)
             .fillMaxWidth()
     ) { page ->
         Image(
@@ -627,26 +724,100 @@ fun Tabs(details: DetailsObject?, reviews: ReviewsObject?) {
                         .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    repeat(5) {
-                        Row(
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .width(140.dp),
-                                text = "Xuất sắc",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            LinearProgressIndicator(
-                                progress = 0.6f,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(12.dp)
-                                    .clip(RoundedCornerShape(99.dp))
-                            )
-                        }
+                                .width(140.dp),
+                            text = "Xuất sắc",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.2f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .width(140.dp),
+                            text = "Rất tốt",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.1f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .width(140.dp),
+                            text = "Trung bình",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.6f,
+                            modifier = Modifier
+                                .weight(5f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .width(140.dp),
+                            text = "Tồi tệ",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.1f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .width(140.dp),
+                            text = "Tệ",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        LinearProgressIndicator(
+                            progress = 0.1f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(99.dp))
+                        )
                     }
                 }
 //
